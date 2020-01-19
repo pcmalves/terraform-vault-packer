@@ -14,7 +14,6 @@ provider "aws" {
 #   vpc_cidr_block          = "${var.vpc_cidr_block}"
 # }
 
-
 # module "vault-instance" {
 #   source                      = "./modules/instance"
 #   ami                         = "${var.ami}"
@@ -30,20 +29,16 @@ provider "aws" {
 #   vpc_security_group_ids      = "${aws_security_group.sg_vault_server.id}"
 # }
 
-
 # data "template_file" "vault-server-userdata" {
 #   template = "${file("./script/update_instance.sh")}"
 # }
-
 
 # data "http" "my-ip-address" {
 #   url = "http://ipv4.icanhazip.com"
 # }
 
-
 # resource "aws_security_group" "sg_vault_server" {
 #   vpc_id = "${module.vault-vpc.vpc_id}"
-
 
 #   ingress {
 #     description = "ssh access to my ip"
@@ -53,7 +48,6 @@ provider "aws" {
 #     to_port     = 22
 #   }
 
-
 #   ingress {
 #     description = "http access for everyone"
 #     cidr_blocks = ["0.0.0.0/0"]
@@ -62,7 +56,6 @@ provider "aws" {
 #     to_port     = 80
 #   }
 
-
 #   egress {
 #     cidr_blocks = ["0.0.0.0/0"]
 #     from_port   = 0
@@ -70,9 +63,7 @@ provider "aws" {
 #     to_port     = 0
 #   }
 
-
 #   tags = {
 #     Name = "sg-${var.name}"
 #   }
 # }
-
