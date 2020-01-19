@@ -10,4 +10,11 @@ resource "aws_instance" "main" {
   subnet_id                   = "${var.subnet_id}"
   user_data                   = "${var.user_data}"
   vpc_security_group_ids      = ["${var.vpc_security_group_ids}"]
+  depends_on                  = ["null_resource.create-ami-vault"]
+}
+
+resource "null_resource" "create-ami-vault" {
+  provisioner "local-exec" {
+    command = "packer build build.json"
+  }
 }

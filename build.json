@@ -20,6 +20,6 @@
     },
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "image-base-vault {{timestamp}}"
+    "ami_name": "image-base-vault-{{timestamp}}"
   }]
 }
