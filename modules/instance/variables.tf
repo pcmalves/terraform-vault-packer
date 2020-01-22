@@ -11,5 +11,4 @@ variable "root_block_device" {
 
 variable "source_dest_check" {}
 variable "subnet_id" {}
-variable "user_data" {}
 variable "vpc_security_group_ids" {}

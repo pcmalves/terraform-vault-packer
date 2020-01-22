@@ -8,13 +8,5 @@ resource "aws_instance" "main" {
   root_block_device           = "${var.root_block_device}"
   source_dest_check           = "${var.source_dest_check}"
   subnet_id                   = "${var.subnet_id}"
-  user_data                   = "${var.user_data}"
   vpc_security_group_ids      = ["${var.vpc_security_group_ids}"]
-  depends_on                  = ["null_resource.create-ami-vault"]
-}
-
-resource "null_resource" "create-ami-vault" {
-  provisioner "local-exec" {
-    command = "packer build build.json"
-  }
 }
