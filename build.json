@@ -22,6 +22,15 @@
     "ssh_username": "ubuntu",
     "ami_name": "image-base-vault-{{timestamp}}",
     "vpc_id": "{{user `vpc`}}",
-    "subnet_id": "{{user `subnet`}}"
-  }]
+    "subnet_id": "{{user `subnet`}}",
+    "tags": {
+      "Name": "Bastion"
+    }
+  }],
+  "provisioners": [
+    {
+        "type": "shell",
+        "script": "./config.sh"
+    }
+]
 }
