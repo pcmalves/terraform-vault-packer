@@ -8,6 +8,24 @@ resource "aws_vpc" "main" {
   }
 }
 
+# data "template_file" "build" {
+#   template = "${file("${path.module}/file/build.json")}"
+
+#   vars = {
+#     vpc_id    = "${aws_vpc.main.id}"
+#     subnet_id = "${aws_subnet.subnet-main.id}"
+#   }
+# }
+
+resource "null_resource" "create-ami-vault" {
+  provisioner "local-exec" {
+    command     = "packer build build.json"
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = ["aws_vpc.main"]
+}
+
 resource "aws_subnet" "subnet-main" {
   availability_zone       = "${var.availability_zone}"
   cidr_block              = "${var.subnet_cidr_block}"
