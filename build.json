@@ -2,6 +2,8 @@
   "variables": {
     "aws_access_key": "",
     "aws_secret_key": "",
+    "vpc_id": "",
+    "subnet_id": "",
     "region": "us-east-1"
   },
   "builders": [{
@@ -21,16 +23,10 @@
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
     "ami_name": "image-base-vault-{{timestamp}}",
-    "vpc_id": "{{user `vpc`}}",
-    "subnet_id": "{{user `subnet`}}",
+    "vpc_id": "{{user `vpc_id`}}",
+    "subnet_id": "{{user `subnet_id`}}",
     "tags": {
-      "Name": "Bastion"
+      "Name": "ami-vault"
     }
-  }],
-  "provisioners": [
-    {
-        "type": "shell",
-        "script": "./config.sh"
-    }
-]
+  }]
 }
