@@ -17,14 +17,14 @@ resource "aws_vpc" "main" {
 #   }
 # }
 
-resource "null_resource" "create-ami-vault" {
-  provisioner "local-exec" {
-    command     = "packer build build.json"
-    interpreter = ["/bin/bash", "-c"]
-  }
+# resource "null_resource" "create-ami-vault" {
+#   provisioner "local-exec" {
+#     command     = "packer build build.json"
+#     interpreter = ["/bin/bash", "-c"]
+#   }
 
-  depends_on = ["aws_vpc.main"]
-}
+#   depends_on = ["aws_vpc.main"]
+# }
 
 resource "aws_subnet" "subnet-main" {
   availability_zone       = "${var.availability_zone}"
@@ -37,14 +37,6 @@ resource "aws_subnet" "subnet-main" {
   }
 }
 
-resource "aws_internet_gateway" "igw-main" {
-  vpc_id = "${aws_vpc.main.id}"
-
-  tags = {
-    Name = "igw-${var.tag_name}"
-  }
-}
-
 resource "aws_route_table" "rtb-main" {
   vpc_id = "${aws_vpc.main.id}"
 
@@ -53,13 +45,13 @@ resource "aws_route_table" "rtb-main" {
   }
 }
 
-resource "aws_route" "internet-access-main" {
-  destination_cidr_block = "${var.destination_cidr_block}"
-  gateway_id             = "${aws_internet_gateway.igw-main.id}"
-  route_table_id         = "${aws_route_table.rtb-main.id}"
+resource "aws_network_interface" "multi-ip" {
+  subnet_id   = "${aws_subnet.subnet-main.id}"
+  private_ips = ["10.0.1.5"]
 }
 
-resource "aws_route_table_association" "vpc-association" {
-  route_table_id = "${aws_route_table.rtb-main.id}"
-  subnet_id      = "${aws_subnet.subnet-main.id}"
+resource "aws_eip" "main" {
+  vpc                       = true
+  network_interface         = "${aws_network_interface.multi-ip.id}"
+  associate_with_private_ip = "10.0.1.5"
 }
