@@ -2,17 +2,17 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# module "vault-vpc" {
-#   source                  = "./modules/network"
-#   availability_zone       = "${var.availability_zone}"
-#   destination_cidr_block  = "${var.destination_cidr_block}"
-#   enable_dns_hostnames    = "${var.enable_dns_hostnames}"
-#   enable_dns_support      = "${var.enable_dns_support}"
-#   map_public_ip_on_launch = "${var.map_public_ip_on_launch}"
-#   subnet_cidr_block       = "${var.subnet_cidr}"
-#   tag_name                = "${var.name}"
-#   vpc_cidr_block          = "${var.vpc_cidr_block}"
-# }
+module "vault-vpc" {
+  source                  = "./modules/network"
+  availability_zone       = "${var.availability_zone}"
+  destination_cidr_block  = "${var.destination_cidr_block}"
+  enable_dns_hostnames    = "${var.enable_dns_hostnames}"
+  enable_dns_support      = "${var.enable_dns_support}"
+  map_public_ip_on_launch = "${var.map_public_ip_on_launch}"
+  subnet_cidr_block       = "${var.subnet_cidr}"
+  tag_name                = "${var.name}"
+  vpc_cidr_block          = "${var.vpc_cidr_block}"
+}
 
 # module "vault-instance" {
 #   source                      = "./modules/instance"
@@ -28,12 +28,15 @@ provider "aws" {
 #   vpc_security_group_ids      = "${aws_security_group.sg_vault_server.id}"
 # }
 
+
 # data "http" "my-ip-address" {
 #   url = "http://ipv4.icanhazip.com"
 # }
 
+
 # resource "aws_security_group" "sg_vault_server" {
 #   vpc_id = "${module.vault-vpc.vpc_id}"
+
 
 #   ingress {
 #     description = "ssh access to my ip"
@@ -43,6 +46,7 @@ provider "aws" {
 #     to_port     = 22
 #   }
 
+
 #   ingress {
 #     description = "http access for everyone"
 #     cidr_blocks = ["0.0.0.0/0"]
@@ -51,6 +55,7 @@ provider "aws" {
 #     to_port     = 80
 #   }
 
+
 #   egress {
 #     cidr_blocks = ["0.0.0.0/0"]
 #     from_port   = 0
@@ -58,7 +63,9 @@ provider "aws" {
 #     to_port     = 0
 #   }
 
+
 #   tags = {
 #     Name = "sg-${var.name}"
 #   }
 # }
+
