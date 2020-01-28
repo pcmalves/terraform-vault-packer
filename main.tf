@@ -1,6 +1,42 @@
 provider "aws" {
-  region = "us-west-1"
+  region = "us-east-1"
 }
+
+# resource "aws_instance" "web" {
+#   ami                    = "ami-04b9e92b5572fa0d1"
+#   instance_type          = "t2.micro"
+#   key_name               = "infra-system-deploy"
+#   subnet_id              = "${aws_subnet.subnet-public-vault-server.id}"
+#   vpc_security_group_ids = ["${aws_security_group.sg_vault_server.id}"]
+#   user_data              = "${file("./packer/config.sh")}"
+
+#   tags = {
+#     Name = "Teste-User-Data"
+#   }
+# }
+
+# resource "aws_security_group" "sg_vault_server" {
+#   vpc_id = "${aws_vpc.vpc-main.id}"
+
+#   ingress {
+#     description = "ssh access to my ip"
+#     cidr_blocks = ["0.0.0.0/0"]
+#     from_port   = 22
+#     protocol    = "tcp"
+#     to_port     = 22
+#   }
+
+#   egress {
+#     cidr_blocks = ["0.0.0.0/0"]
+#     from_port   = 0
+#     protocol    = "-1"
+#     to_port     = 0
+#   }
+
+#   tags = {
+#     Name = "sg-vault-server"
+#   }
+# }
 
 # resource "aws_vpc" "vpc-main" {
 #   cidr_block           = "${var.vpc_cidr_block}"
