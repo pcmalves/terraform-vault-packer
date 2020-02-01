@@ -44,22 +44,41 @@ LimitNOFILE=65536
 WantedBy=multi-user.target
 EOF
 
-# apt-get update
-# apt-get -y install python-pip
-# sudo -H -u ubuntu bash -c "pip install ansible-tower-cli"
-# cd /home/ubuntu &&
-# echo "host: awx.quero.space" >> .tower_cli.cfg &&
-# echo "password: 1n@!7CbfDx1aYRmf" >> .tower_cli.cfg && 
-# echo "username: grao_vizir" >> .tower_cli.cfg &&
-# chown ubuntu.ubuntu .tower_cli.cfg &&
-# chmod 600 .tower_cli.cfg &&
-# echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKxRtusT4l04oWYsriSiLEy8PlNYZXVUUfhEtT38Yj3YbB0DuF3alQYPTjn9RXgZ8TDrk0ntkcja+Gn4nQHsM3M2H6QG+jfw0Rr+HlRR0HnsCSOL/GDwjKm14SFahaDndGa63mDPhpJPIDB2zKAeo5t0n13guI1euDWAUHwI3cxzvCU5GI6Uv8xwDO9cJJxBDIpHYAuKeO5bfar4/gKikcWCLGxCBryjf6RWezSIVru/M2l08KexCIg0qF+3wVXXCXYJOWeMoTdShB3oEnwR+FYjIMolGnPhSGOO07OnyW1GVHB5BawqaS0DLGnj8alMGV8rNgIm06HP0XarFljrvt awx@awx-server" >> /home/ubuntu/.ssh/authorized_keys &&
-# ADDRESS_INSTANCE=$(hostname -I | cut -f1 -d' ') &&
-# INVENTORY_NAME='instance' &&
-# sudo -H -u ubuntu bash -c "/home/ubuntu/.local/bin/tower-cli host create --name=$ADDRESS_INSTANCE --inventory=$INVENTORY_NAME"
+sudo touch /etc/vault/config.hcl
 
+cat <<EOF | sudo tee /etc/vault/config.hcl
+disable_cache = true
 
-# aws ec2 describe-instances --region us-east-1 --filter | grep Code | cut -d ':' -f 2 | grep 48 | cut -d ',' -f1
-# aws ec2 describe-instances --filter Name=private-ip-address,Values=10.10.97.37 | grep -A 20 NetworkInterfaces | grep -oP '(?<=PrivateIpAddress": ").*(?=")'
-# tower-cli inventory list | grep 15 | cut -f1 -d ' '
+disable_mlock = true
 
+ui = true
+
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = 1
+}
+
+storage "file" {
+  path = "/var/lib/vault/data"
+}
+
+api_addr = "http://0.0.0.0:8200"
+
+max_lease_ttl = "10h"
+
+default_lease_ttl = "10h"
+
+cluster_name = "vault"
+
+raw_storage_endpoint = true
+
+disable_sealwrap = true
+
+disable_printable_check = true
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now vault
+echo "export VAULT_ADDR=http://0.0.0.0:8200" >> ~/.bashrc
+source ~/.bashrc
+sudo rm -rf  /var/lib/vault/data/*

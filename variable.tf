@@ -31,7 +31,7 @@ variable "subnet-private" {
 }
 
 variable "availability_zone" {
-  default = "us-east-1c"
+  default = "us-west-1c"
 }
 
 variable "map_public_ip_on_launch" {
