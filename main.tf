@@ -4,75 +4,66 @@ provider "aws" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQpaupYGrGt3hhjG5ZmDOLXbCAWMXBsYFbqSz8pMRoTdeLNTPNtA/DE6qkav9L6XLm8jk5ZI7u8QWR4Ya+QUQRIzrXNgsArMkX6fCYBvQw05rYH3z1yRhfPXEVT61b0mOOQXiL8httxNZuN0xzGmnxjL9H0Cm3tJePc5xcEyh4r2dwfc4JVrmoSK2jWc7Q0xpuXjVtnW05EVkOgAmow3aHQPoyqMZNILr/TXkZFQHhDEPWpcrrmGSJ0kA8ogikLFJf4f5MJtOG3c6BTnqsy4VLY5OsidGNWS8LEmxqrY2cVolE7YdmkGtqmnT4ItvmtiUMlCD9l paulo@exemple"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQpaupYGrGt3hhjG5ZmDOLXbCAWMXBsYFbqSz8pMRoTdeLNTPNtA/DE6qkav9L6XLm8jk5ZI7u8QWR4Ya+QUQRIzrXNgsArMkX6fCYBvQw05rYH3z1yRhfPXEVT61b0mOOQXiL8httxNZuN0xzGmnxjL9H0Cm3tJePc5xcEyh4r2dwfc4JVrmoSK2jWc7Q0xpuXjVtnW05EVkOgAmow3aHQPoyqMZNILr/TXkZFQHhDEPWpcrrmGSJ0kA8ogikLFJf4f5MJtOG3c6BTnqsy4VLY5OsidGNWS8LEmxqrY2cVolE7YdmkGtqmnT4ItvmtiUM6dpf paulo@example"
 }
 
-data "aws_ami" "ami-vault" {
-  executable_users = ["self"]
-  most_recent      = true
-  owners           = ["self"]
+data "aws_ami" "base-image" {
+  most_recent = true
+  owners      = ["099874797698"]
 
   filter {
     name   = "name"
-    values = ["vault-image"]
+    values = ["image-base-vault-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
 resource "aws_instance" "web" {
-  #   ami                    = "ami-04b9e92b5572fa0d1" # us-east-1
-  ami                    = "${data.aws_ami.ami-vault.id}"                # us-west-1
+  ami                    = "${data.aws_ami.base-image.id}"
   instance_type          = "t2.micro"
   key_name               = "deployer-key"
   subnet_id              = "${aws_subnet.subnet-public-vault-server.id}"
   vpc_security_group_ids = ["${aws_security_group.sg_vault_server.id}"]
 
-  #   user_data              = "${file("./packer/config.sh")}"
-  depends_on = ["aws_internet_gateway.igw-vault-server"]
-  depends_on = ["aws_route.route-public-vault-server"]
-  depends_on = ["aws_route_table.rtb-public-vault-server"]
-  depends_on = ["aws_route_table_association.public"]
-  depends_on = ["aws_security_group.sg_vault_server"]
-  depends_on = ["aws_subnet.subnet-public-vault-server"]
-  depends_on = ["aws_vpc.vpc-main"]
-
-  provisioner "local-exec" {
-    command = "cp -r ./create_image.tpl create_image.json"
-  }
-
-  provisioner "local-exec" {
-    command = "sed -i 's:VPC_ID:${aws_vpc.vpc-main.id}:g' ./create_image.json"
-  }
-
-  provisioner "local-exec" {
-    command = "sed -i 's:SUBNET_ID:${aws_subnet.subnet-public-vault-server.id}:g' ./create_image.json"
-  }
-
-  provisioner "local-exec" {
-    command = "packer build create_image.json"
-  }
+  depends_on = [
+    "aws_internet_gateway.igw-vault-server",
+    "aws_route.route-public-vault-server",
+    "aws_route_table.rtb-public-vault-server",
+    "aws_route_table_association.public",
+    "aws_subnet.subnet-public-vault-server",
+    "aws_vpc.vpc-main",
+  ]
 
   tags = {
     Name = "ec2-${var.tag_name}"
   }
 }
 
-data "terraform_remote_state" "remote-state-main" {
-  backend = "local"
-
-  config {
-    path = "./terraform.tfstate"
-  }
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
 }
 
 resource "aws_security_group" "sg_vault_server" {
   vpc_id = "${aws_vpc.vpc-main.id}"
 
   ingress {
-    description = "ssh access to my ip"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "Access instance SSH"
+    cidr_blocks = ["${chomp(data.http.myip.body)}/32"]
     from_port   = 22
     protocol    = "tcp"
     to_port     = 22
+  }
+
+  ingress {
+    description = "Access home vault server"
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 8200
+    protocol    = "tcp"
+    to_port     = 8200
   }
 
   egress {
@@ -127,6 +118,18 @@ resource "aws_subnet" "subnet-public-vault-server" {
   cidr_block              = "${var.subnet-public}"
   availability_zone       = "${var.availability_zone}"
   map_public_ip_on_launch = "${var.map_public_ip_on_launch}"
+
+  provisioner "local-exec" {
+    command = "cp -r ./create_image.tpl create_image.json"
+  }
+
+  provisioner "local-exec" {
+    command = "sed -i 's:VPC_ID:${aws_vpc.vpc-main.id}:g' ./create_image.json"
+  }
+
+  provisioner "local-exec" {
+    command = "sed -i 's:SUBNET_ID:${aws_subnet.subnet-public-vault-server.id}:g' ./create_image.json"
+  }
 
   tags = {
     Name = "subnet-public-${var.tag_name}"
