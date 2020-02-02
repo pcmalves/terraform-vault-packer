@@ -12,12 +12,12 @@ data "terraform_remote_state" "remote-state-project" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQpaupYGrGt3hhjG5ZmDOLXbCAWMXBsYFbqSz8pMRoTdeLNTPNtA/DE6qkav9L6XLm8jk5ZI7u8QWR4Ya+QUQRIzrXNgsArMkX6fCYBvQw05rYH3z1yRhfPXEVT61b0mOOQXiL8httxNZuN0xzGmnxjL9H0Cm3tJePc5xcEyh4r2dwfc4JVrmoSK2jWc7Q0xpuXjVtnW05EVkOgAmow3aHQPoyqMZNILr/TXkZFQHhDEPWpcrrmGSJ0kA8ogikLFJf4f5MJtOG3c6BTnqsy4VLY5OsidGNWS8LEmxqrY2cVolE7YdmkGtqmnT4ItvmtiUM6dpfEqOy4RRcGOplCD9l paulo@qbnotebook"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQpaupMXBsYFbqSz8pMRoTdeLNTPNtA/DE6qkav9L6XLm8jk5ZI7u8QWR4Ya+QUQRIzrXNgsArMkX6fCYBvQw05rYH3z1yRhfPXEVT61b0mOOQXiL8httxNZuN0xzGmnxjL9H0Cm3tJePc5xcEyh4r2dwfc4JVrmoSK2jWc7Q0xpuXjVtnW05EVkOgAmow3aHQPoyqMZNILr/TXkZFQHhDEPWpcrrmGSJ0kA8ogikLFJf4f5MJtOG3c6BTnqsy4VLY5OsidGNWS8LEmxqrY2cVolE7YdmkGtqmnT4ItvmtiUM6dpfEqOy4RRcGOplCD9l paulo@example"
 }
 
 data "aws_ami" "base-image" {
   most_recent = true
-  owners      = ["725582217686"]
+  owners      = ["7793724902"]
 
   filter {
     name   = "name"
