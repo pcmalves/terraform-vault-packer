@@ -1,7 +1,11 @@
-output "vpc_id" {
+output "vpc-id" {
   value = "${aws_vpc.vpc-main.id}"
 }
 
-output "subnet_id" {
+output "public-subnet-id" {
   value = "${aws_subnet.subnet-public-vault-server.id}"
+}
+
+output "private-subnet-id" {
+  value = "${aws_subnet.subnet-private-vault-server.id}"
 }
