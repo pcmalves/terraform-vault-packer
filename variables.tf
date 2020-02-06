@@ -10,12 +10,8 @@ variable "enable_dns_hostnames" {
   default = true
 }
 
-variable "subnet_cidr" {
-  default = "10.0.1.0/24"
-}
-
 variable "vpc_cidr_block" {
-  default = "10.0.0.0/16"
+  default = "172.16.0.0/16"
 }
 
 variable "destination_cidr_block" {
@@ -23,15 +19,15 @@ variable "destination_cidr_block" {
 }
 
 variable "subnet-public" {
-  default = "10.0.0.0/24"
+  default = ["172.16.3.0/24", "172.16.0.0/24"]
 }
 
 variable "subnet-private" {
-  default = "10.0.1.0/24"
+  default = ["172.16.2.0/24", "172.16.1.0/24"]
 }
 
 variable "availability_zone" {
-  default = "us-west-1c"
+  default = ["us-west-1a", "us-west-1c"]
 }
 
 variable "map_public_ip_on_launch" {
