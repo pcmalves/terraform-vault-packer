@@ -3,7 +3,7 @@ output "vpc-id" {
 }
 
 output "public-subnet-id" {
-  value = "${aws_subnet.subnet-public-vault-server.id}"
+  value = "${aws_subnet.subnet-public-vault-server.*.id}"
 }
 
 # output "private-subnet-id" {

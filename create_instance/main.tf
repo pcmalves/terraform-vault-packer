@@ -31,10 +31,8 @@ resource "aws_key_pair" "deployer" {
 # }
 
 resource "aws_instance" "web" {
-  #   count = 6
-
-  #   ami                    = "${data.aws_ami.base-image.id}"
-  ami                    = "ami-03ba3948f6c37a4b0"
+  count                  = 2
+  ami                    = "${data.aws_ami.base-image.id}"
   instance_type          = "t2.micro"
   key_name               = "deployer-key"
   subnet_id              = "${data.terraform_remote_state.remote-state-project.public-subnet-id}"
